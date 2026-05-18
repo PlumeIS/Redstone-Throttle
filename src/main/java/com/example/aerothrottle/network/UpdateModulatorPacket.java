@@ -35,19 +35,41 @@ public record UpdateModulatorPacket(BlockPos pos, byte mode, int lockedRate, int
     }
 
     public static void handle(UpdateModulatorPacket pkt, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            if (!(ctx.player().level() instanceof Level level)) return;
-            if (!level.isLoaded(pkt.pos)) return;
-            BlockEntity be = level.getBlockEntity(pkt.pos);
-            if (!(be instanceof RedstoneSpeedModulatorBlockEntity modulator)) return;
-            // Distance check: 8 blocks
-            if (ctx.player().distanceToSqr(pkt.pos.getX() + 0.5, pkt.pos.getY() + 0.5, pkt.pos.getZ() + 0.5) > 64) return;
-            modulator.applySettings(
-                RedstoneSpeedModulatorBlockEntity.Mode.of(pkt.mode),
-                pkt.lockedRate,
-                pkt.intervalTicks,
-                pkt.strengthMultiplier,
-                pkt.initialSpeed);
-        });
+        ctx.enqueueWork(() -> applySettings(pkt, ctx))
+            .exceptionally(throwable -> {
+                AeroThrottleMod.LOGGER.warn("Failed to handle modulator update packet at {}", pkt.pos(), throwable);
+                return null;
+            });
+    }
+
+    private static void applySettings(UpdateModulatorPacket pkt, IPayloadContext ctx) {
+        if (!(ctx.player().level() instanceof Level level)) {
+            AeroThrottleMod.LOGGER.warn("Ignored modulator update packet: invalid level for {}", ctx.player().getName().getString());
+            return;
+        }
+
+        if (!level.isLoaded(pkt.pos())) {
+            AeroThrottleMod.LOGGER.warn("Ignored modulator update packet: position not loaded {}", pkt.pos());
+            return;
+        }
+
+        BlockEntity blockEntity = level.getBlockEntity(pkt.pos());
+        if (!(blockEntity instanceof RedstoneSpeedModulatorBlockEntity modulator)) {
+            AeroThrottleMod.LOGGER.warn("Ignored modulator update packet: no modulator block entity at {}", pkt.pos());
+            return;
+        }
+
+        // Distance check: 8 blocks
+        if (ctx.player().distanceToSqr(pkt.pos().getX() + 0.5, pkt.pos().getY() + 0.5, pkt.pos().getZ() + 0.5) > 64) {
+            AeroThrottleMod.LOGGER.warn("Ignored modulator update packet: player {} too far from {}", ctx.player().getName().getString(), pkt.pos());
+            return;
+        }
+
+        modulator.applySettings(
+            RedstoneSpeedModulatorBlockEntity.Mode.of(pkt.mode()),
+            pkt.lockedRate(),
+            pkt.intervalTicks(),
+            pkt.strengthMultiplier(),
+            pkt.initialSpeed());
     }
 }

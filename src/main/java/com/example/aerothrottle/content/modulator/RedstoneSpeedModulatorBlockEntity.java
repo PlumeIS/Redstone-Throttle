@@ -147,10 +147,6 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
         return facing.getClockWise();
     }
 
-    public void onRedstoneChanged() {
-        // hook for Block.neighborChanged — tick() polls each frame; reserved for future use.
-    }
-
     private float readInputSpeed(Direction facing) {
         BlockEntity be = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
         if (!(be instanceof KineticBlockEntity kbe))
@@ -256,7 +252,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        boolean added = super.addToGoggleTooltip(tooltip, isPlayerSneaking);
+        super.addToGoggleTooltip(tooltip, isPlayerSneaking);
 
         tooltip.add(Component.literal(" ")
             .append(Component.translatable("gui.goggles.aero_throttle.output"))

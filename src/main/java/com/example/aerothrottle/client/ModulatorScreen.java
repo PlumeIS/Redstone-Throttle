@@ -9,7 +9,6 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -124,10 +123,8 @@ public class ModulatorScreen extends Screen {
             .append(Component.translatable(key));
     }
 
-    private static MutableComponent intervalLabel(int ticks) {
-        String value = ticks == 1
-            ? "1t (0.05s)"
-            : String.format("%dt (%.2fs)", ticks, ticks / 20.0);
+    private static Component intervalLabel(int ticks) {
+        String value = String.format("%dt (%.2fs)", ticks, ticks / 20.0);
         return Component.translatable("gui.aero_throttle.interval")
             .append(Component.literal(": " + value));
     }
