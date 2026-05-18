@@ -252,7 +252,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        super.addToGoggleTooltip(tooltip, isPlayerSneaking);
+        boolean added = super.addToGoggleTooltip(tooltip, isPlayerSneaking);
 
         tooltip.add(Component.literal(" ")
             .append(Component.translatable("gui.goggles.aero_throttle.output"))
@@ -292,6 +292,6 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
                     String.format("%.2f", intervalTicks / 20.0f)).withStyle(ChatFormatting.DARK_GRAY)));
         }
 
-        return true;
+        return added || !tooltip.isEmpty();
     }
 }

@@ -37,7 +37,7 @@ public record UpdateModulatorPacket(BlockPos pos, byte mode, int lockedRate, int
     public static void handle(UpdateModulatorPacket pkt, IPayloadContext ctx) {
         ctx.enqueueWork(() -> applySettings(pkt, ctx))
             .exceptionally(throwable -> {
-                AeroThrottleMod.LOGGER.warn("Failed to handle modulator update packet at {}", pkt.pos(), throwable);
+                AeroThrottleMod.LOGGER.warn("Unexpected exception while processing modulator update packet at {}", pkt.pos(), throwable);
                 return null;
             });
     }
