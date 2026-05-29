@@ -182,8 +182,7 @@ public class ModulatorScreen extends Screen {
                 guiLeft + WIDTH / 2 + TITLE_X, guiTop + TITLE_Y, COLOR_TITLE);
 
         Component modeText = Component.translatable(
-                "gui.aero_throttle.mode." + mode.name().toLowerCase());
-        g.drawCenteredString(font, modeText,
+                "gui.aero_throttle.mode." + mode.name().toLowerCase(java.util.Locale.ROOT));
                 guiLeft + WIDTH / 2 + MODE_X, guiTop + MODE_Y, COLOR_MODE);
 
         drawValueLabels(g);
@@ -245,9 +244,7 @@ public class ModulatorScreen extends Screen {
     }
 
     // ── Vanilla tooltip ───────────────────────────────────────────
-    private boolean isOverModeBox(double mouseX, double mouseY) {
-        Component t = Component.translatable("gui.aero_throttle.mode." + mode.name().toLowerCase());
-        int tw = font.width(t);
+        Component t = Component.translatable("gui.aero_throttle.mode." + mode.name().toLowerCase(java.util.Locale.ROOT));
         int x = guiLeft + WIDTH / 2 + MODE_X - tw / 2;
         int y = guiTop + MODE_Y;
         return mouseX >= x && mouseX <= x + tw && mouseY >= y && mouseY <= y + font.lineHeight;
@@ -387,7 +384,7 @@ public class ModulatorScreen extends Screen {
     // ═══════════════════════════════════════════════════════════════
     private class ConfirmButton extends AbstractButton {
         ConfirmButton(int x, int y, int size) {
-            super(x, y, size, size, Component.empty());
+            super(x, y, size, size, Component.translatable("gui.done"));
         }
 
         @Override
