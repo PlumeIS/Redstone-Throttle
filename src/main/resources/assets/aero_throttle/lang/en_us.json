@@ -1,6 +1,6 @@
 {
   "block.aero_throttle.redstone_speed_modulator": "Redstone Speed Modulator",
-  "itemGroup.aero_throttle": "Aeronautic Throttle",
+  "itemGroup.aero_throttle": "Throttle",
   "gui.aero_throttle.title": "Redstone Speed Modulator",
   "gui.aero_throttle.mode": "Mode",
   "gui.aero_throttle.mode.strength": "Strength",
@@ -21,5 +21,8 @@
   "gui.goggles.aero_throttle.initial_speed": "base",
   "gui.goggles.aero_throttle.multiplier": "strength mul",
   "gui.goggles.aero_throttle.interval": "Step interval: %ss",
-  "tooltip.aero_throttle.redstone_speed_modulator.summary": "Transforms input rotation by an offset accumulated from redstone signals. Right-click to configure."
+  "tooltip.aero_throttle.redstone_speed_modulator.summary": "Transforms input rotation by an offset accumulated from redstone signals. Shift + Right-click to configure.",
+  "gui.aero_throttle.tooltip.scroll": "Scroll to Adjust",
+  "gui.aero_throttle.tooltip.shift": "Hold Shift for ×10",
+  "gui.aero_throttle.tooltip.switch_mode": "Scroll to Switch"
 }
