@@ -54,7 +54,7 @@ jobs:
         with:
           name: "Aeronautic Throttle ${{ steps.version.outputs.VERSION }}"
           tag_name: ${{ github.ref_name }}
-          files: build/libs/aero_throttle-1.21.1-*.jar
+          files: build/libs/redstone_throttle-1.21.1-*.jar
           generate_release_notes: true
           fail_on_unmatched_files: true
         env:
