@@ -1,8 +1,8 @@
-package com.example.redstonethrottle.registry;
+package com.z33awa.redstonethrottle.registry;
 
 import java.util.function.Supplier;
 
-import com.example.redstonethrottle.RedstoneThrottleMod;
+import com.z33awa.redstonethrottle.RedstoneThrottleMod;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;

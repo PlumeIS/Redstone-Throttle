@@ -1,7 +1,7 @@
-package com.example.redstonethrottle.client;
+package com.z33awa.redstonethrottle.client;
 
-import com.example.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlock;
-import com.example.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
+import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlock;
+import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;

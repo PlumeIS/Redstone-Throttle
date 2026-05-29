@@ -1,4 +1,4 @@
-package com.example.redstonethrottle.content.modulator;
+package com.z33awa.redstonethrottle.content.modulator;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package com.example.redstonethrottle.network;
+package com.z33awa.redstonethrottle.network;
 
-import com.example.redstonethrottle.RedstoneThrottleMod;
-import com.example.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
+import com.z33awa.redstonethrottle.RedstoneThrottleMod;
+import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;

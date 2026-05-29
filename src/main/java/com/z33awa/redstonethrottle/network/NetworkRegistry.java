@@ -1,6 +1,6 @@
-package com.example.redstonethrottle.network;
+package com.z33awa.redstonethrottle.network;
 
-import com.example.redstonethrottle.RedstoneThrottleMod;
+import com.z33awa.redstonethrottle.RedstoneThrottleMod;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

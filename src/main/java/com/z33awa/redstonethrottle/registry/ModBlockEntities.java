@@ -1,9 +1,9 @@
-package com.example.redstonethrottle.registry;
+package com.z33awa.redstonethrottle.registry;
 
 import java.util.function.Supplier;
 
-import com.example.redstonethrottle.RedstoneThrottleMod;
-import com.example.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
+import com.z33awa.redstonethrottle.RedstoneThrottleMod;
+import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;

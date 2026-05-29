@@ -1,6 +1,6 @@
-package com.example.redstonethrottle.registry;
+package com.z33awa.redstonethrottle.registry;
 
-import com.example.redstonethrottle.RedstoneThrottleMod;
+import com.z33awa.redstonethrottle.RedstoneThrottleMod;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;

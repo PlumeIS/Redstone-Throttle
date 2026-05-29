@@ -1,6 +1,6 @@
-package com.example.redstonethrottle.client;
+package com.z33awa.redstonethrottle.client;
 
-import com.example.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
+import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
 
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;

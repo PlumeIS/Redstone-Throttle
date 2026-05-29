@@ -1,8 +1,8 @@
-package com.example.redstonethrottle.client;
+package com.z33awa.redstonethrottle.client;
 
-import com.example.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
-import com.example.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity.Mode;
-import com.example.redstonethrottle.network.UpdateModulatorPacket;
+import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
+import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity.Mode;
+import com.z33awa.redstonethrottle.network.UpdateModulatorPacket;
 import com.mojang.blaze3d.platform.Lighting;
 
 import com.simibubi.create.AllSoundEvents;
@@ -11,7 +11,7 @@ import com.simibubi.create.foundation.gui.AllIcons;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 
-import com.example.redstonethrottle.registry.ModBlocks;
+import com.z33awa.redstonethrottle.registry.ModBlocks;
 
 import net.minecraft.world.item.ItemStack;
 
@@ -33,7 +33,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity.*;
+import static com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity.*;
 
 public class ModulatorScreen extends Screen {
 

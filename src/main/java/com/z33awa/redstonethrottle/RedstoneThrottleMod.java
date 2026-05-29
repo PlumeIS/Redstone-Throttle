@@ -1,9 +1,9 @@
-package com.example.redstonethrottle;
+package com.z33awa.redstonethrottle;
 
-import com.example.redstonethrottle.registry.ModBlockEntities;
-import com.example.redstonethrottle.registry.ModBlocks;
-import com.example.redstonethrottle.registry.ModCreativeTabs;
-import com.example.redstonethrottle.registry.ModItems;
+import com.z33awa.redstonethrottle.registry.ModBlockEntities;
+import com.z33awa.redstonethrottle.registry.ModBlocks;
+import com.z33awa.redstonethrottle.registry.ModCreativeTabs;
+import com.z33awa.redstonethrottle.registry.ModItems;
 import com.mojang.logging.LogUtils;
 
 import net.neoforged.bus.api.IEventBus;

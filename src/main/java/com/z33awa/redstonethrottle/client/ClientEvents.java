@@ -1,7 +1,7 @@
-package com.example.redstonethrottle.client;
+package com.z33awa.redstonethrottle.client;
 
-import com.example.redstonethrottle.RedstoneThrottleMod;
-import com.example.redstonethrottle.registry.ModBlockEntities;
+import com.z33awa.redstonethrottle.RedstoneThrottleMod;
+import com.z33awa.redstonethrottle.registry.ModBlockEntities;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;

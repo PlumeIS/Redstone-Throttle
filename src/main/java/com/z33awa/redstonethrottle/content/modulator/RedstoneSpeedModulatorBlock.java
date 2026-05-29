@@ -1,7 +1,7 @@
-package com.example.redstonethrottle.content.modulator;
+package com.z33awa.redstonethrottle.content.modulator;
 
-import com.example.redstonethrottle.client.ScreenOpener;
-import com.example.redstonethrottle.registry.ModBlockEntities;
+import com.z33awa.redstonethrottle.client.ScreenOpener;
+import com.z33awa.redstonethrottle.registry.ModBlockEntities;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 
