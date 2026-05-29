@@ -74,11 +74,11 @@
 
 ```bash
 git clone https://github.com/z33awa/Aeronautic-Throttle.git
-cd AeroThrottle
+cd Aeronautic-Throttle
 ./gradlew build
 ```
 
-产物路径：`build/libs/aero_throttle-1.21.1-<version>.jar`
+产物路径：`build/libs/redstone_throttle-1.21.1-<version>.jar`
 
 需要 Java 21。
 
