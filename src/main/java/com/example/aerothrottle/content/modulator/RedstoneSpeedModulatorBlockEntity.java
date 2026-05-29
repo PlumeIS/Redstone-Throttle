@@ -148,7 +148,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
     }
 
     private float readInputSpeed(Direction facing) {
-        BlockEntity be = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
+         BlockEntity be = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
         if (!(be instanceof KineticBlockEntity kbe))
             return 0f;
         Block block = kbe.getBlockState().getBlock();
