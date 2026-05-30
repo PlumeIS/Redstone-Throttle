@@ -30,7 +30,7 @@ public class RedstoneSpeedModulatorBlock extends DirectionalKineticBlock impleme
 
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        return face == state.getValue(FACING);
+        return face.getAxis() == getRotationAxis(state);
     }
 
     @Override
