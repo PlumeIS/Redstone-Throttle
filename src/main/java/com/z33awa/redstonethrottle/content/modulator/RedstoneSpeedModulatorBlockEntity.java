@@ -3,7 +3,6 @@ package com.z33awa.redstonethrottle.content.modulator;
 import java.util.List;
 
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
-import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
@@ -15,7 +14,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -148,13 +146,8 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
     }
 
     private float readInputSpeed(Direction facing) {
-         BlockEntity be = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
+        BlockEntity be = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
         if (!(be instanceof KineticBlockEntity kbe))
-            return 0f;
-        Block block = kbe.getBlockState().getBlock();
-        if (!(block instanceof IRotate rotate))
-            return 0f;
-        if (rotate.getRotationAxis(kbe.getBlockState()) != facing.getAxis())
             return 0f;
         return kbe.getTheoreticalSpeed();
     }
@@ -165,9 +158,6 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
         Direction facing = getBlockState().getValue(RedstoneSpeedModulatorBlock.FACING);
         BlockEntity be = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
         if (!(be instanceof KineticBlockEntity kbe)) return 0f;
-        Block block = kbe.getBlockState().getBlock();
-        if (!(block instanceof IRotate rotate)) return 0f;
-        if (rotate.getRotationAxis(kbe.getBlockState()) != facing.getAxis()) return 0f;
         return kbe.getSpeed();
     }
 
