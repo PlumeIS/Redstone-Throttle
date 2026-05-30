@@ -152,8 +152,8 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
     public static Direction redstoneLeft(Direction facing) {
         return switch (facing) {
             case NORTH -> Direction.WEST;
-            case SOUTH -> Direction.WEST;
-            case EAST -> Direction.SOUTH;
+            case SOUTH -> Direction.EAST;
+            case EAST -> Direction.NORTH;
             case WEST -> Direction.SOUTH;
             case UP, DOWN -> Direction.EAST;
         };
