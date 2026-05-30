@@ -2,7 +2,9 @@ package com.z33awa.redstonethrottle.content.modulator;
 
 import java.util.List;
 
+import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
+import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
@@ -14,6 +16,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -142,21 +145,57 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
         }
     }
 
-    /** Two horizontal directions perpendicular to the shaft axis, used as redstone inputs. */
+    /**
+     * Returns the world direction of the left redstone input face for the given facing.
+     * The left input is the model's west face (side_redstone_west texture) after blockstate rotation.
+     */
     public static Direction redstoneLeft(Direction facing) {
-        if (facing.getAxis() == Axis.Y) return Direction.EAST;
-        return facing.getCounterClockWise();
+        return switch (facing) {
+            case NORTH -> Direction.WEST;
+            case SOUTH -> Direction.WEST;
+            case EAST -> Direction.SOUTH;
+            case WEST -> Direction.SOUTH;
+            case UP, DOWN -> Direction.EAST;
+        };
     }
 
+    /**
+     * Returns the world direction of the right redstone input face for the given facing.
+     * The right input is the model's east face (side_redstone_east texture) after blockstate rotation.
+     */
     public static Direction redstoneRight(Direction facing) {
-        if (facing.getAxis() == Axis.Y) return Direction.WEST;
-        return facing.getClockWise();
+        return switch (facing) {
+            case NORTH -> Direction.EAST;
+            case SOUTH -> Direction.EAST;
+            case EAST -> Direction.NORTH;
+            case WEST -> Direction.NORTH;
+            case UP, DOWN -> Direction.WEST;
+        };
     }
 
     private float readInputSpeed(Direction facing) {
-        BlockEntity be = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
+        BlockPos neighborPos = worldPosition.relative(facing.getOpposite());
+        BlockEntity be = level.getBlockEntity(neighborPos);
         if (!(be instanceof KineticBlockEntity kbe))
             return 0f;
+
+        // Verify the neighbour actually has a shaft pointing toward us on our rotation axis.
+        BlockState neighborState = kbe.getBlockState();
+        Block neighborBlock = neighborState.getBlock();
+        Direction towardModulator = facing;
+
+        boolean hasShaft;
+        if (neighborBlock instanceof DirectionalKineticBlock dkb) {
+            hasShaft = dkb.hasShaftTowards(level, neighborPos, neighborState, towardModulator);
+        } else if (neighborBlock instanceof IRotate rotate) {
+            hasShaft = rotate.getRotationAxis(neighborState) == facing.getAxis();
+        } else {
+            hasShaft = false;
+        }
+
+        if (!hasShaft)
+            return 0f;
+
         return kbe.getTheoreticalSpeed();
     }
 
@@ -164,8 +203,26 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
     public float readInputSpeed() {
         if (level == null) return 0f;
         Direction facing = getBlockState().getValue(RedstoneSpeedModulatorBlock.FACING);
-        BlockEntity be = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
+        BlockPos neighborPos = worldPosition.relative(facing.getOpposite());
+        BlockEntity be = level.getBlockEntity(neighborPos);
         if (!(be instanceof KineticBlockEntity kbe)) return 0f;
+
+        BlockState neighborState = kbe.getBlockState();
+        Block neighborBlock = neighborState.getBlock();
+        Direction towardModulator = facing;
+
+        boolean hasShaft;
+        if (neighborBlock instanceof DirectionalKineticBlock dkb) {
+            hasShaft = dkb.hasShaftTowards(level, neighborPos, neighborState, towardModulator);
+        } else if (neighborBlock instanceof IRotate rotate) {
+            hasShaft = rotate.getRotationAxis(neighborState) == facing.getAxis();
+        } else {
+            hasShaft = false;
+        }
+
+        if (!hasShaft)
+            return 0f;
+
         return kbe.getSpeed();
     }
 
