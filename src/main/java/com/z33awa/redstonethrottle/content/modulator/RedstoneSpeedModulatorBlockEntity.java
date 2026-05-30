@@ -56,6 +56,14 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
     }
 
     @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide) {
+            updateGeneratedRotation();
+        }
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (level == null || level.isClientSide)
