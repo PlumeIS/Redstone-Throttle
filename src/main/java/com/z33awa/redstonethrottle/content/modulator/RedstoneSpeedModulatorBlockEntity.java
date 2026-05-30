@@ -145,15 +145,32 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
         }
     }
 
-    /** Two horizontal directions perpendicular to the shaft axis, used as redstone inputs. */
+    /**
+     * Returns the world direction of the left redstone input face for the given facing.
+     * The left input is the model's west face (side_redstone_west texture) after blockstate rotation.
+     */
     public static Direction redstoneLeft(Direction facing) {
-        if (facing.getAxis() == Axis.Y) return Direction.EAST;
-        return facing.getCounterClockWise();
+        return switch (facing) {
+            case NORTH -> Direction.WEST;
+            case SOUTH -> Direction.EAST;
+            case EAST -> Direction.NORTH;
+            case WEST -> Direction.SOUTH;
+            case UP, DOWN -> Direction.EAST;
+        };
     }
 
+    /**
+     * Returns the world direction of the right redstone input face for the given facing.
+     * The right input is the model's east face (side_redstone_east texture) after blockstate rotation.
+     */
     public static Direction redstoneRight(Direction facing) {
-        if (facing.getAxis() == Axis.Y) return Direction.WEST;
-        return facing.getClockWise();
+        return switch (facing) {
+            case NORTH -> Direction.EAST;
+            case SOUTH -> Direction.WEST;
+            case EAST -> Direction.SOUTH;
+            case WEST -> Direction.NORTH;
+            case UP, DOWN -> Direction.WEST;
+        };
     }
 
     private float readInputSpeed(Direction facing) {
