@@ -1,4 +1,4 @@
-# Redstone Throttle
+# Create:Redstone Throttle
 
 > 为 **Create** / **Create: Aeronautics** 设计的红石转速调节附属模组。
 
