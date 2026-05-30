@@ -155,7 +155,8 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
             case SOUTH -> Direction.WEST;
             case EAST -> Direction.SOUTH;
             case WEST -> Direction.SOUTH;
-            case UP, DOWN -> Direction.EAST;
+            case UP -> Direction.EAST;
+            case DOWN -> Direction.WEST;
         };
     }
 
@@ -169,7 +170,8 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
             case SOUTH -> Direction.EAST;
             case EAST -> Direction.NORTH;
             case WEST -> Direction.NORTH;
-            case UP, DOWN -> Direction.WEST;
+            case UP -> Direction.WEST;
+            case DOWN -> Direction.EAST;
         };
     }
 
