@@ -154,7 +154,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
             updateGeneratedRotation();
         }
 
-        // Reset stress hysteresis when output stops or switches direction
+        // Reset stress hysteresis when output stops
         if (Math.abs(cachedGenerated) < 0.01f) {
             overstressTicks = 0;
             normalTicks = 0;
