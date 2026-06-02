@@ -303,7 +303,8 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
             return;
         }
 
-        boolean outputOverStressed = getOrCreateNetwork().calculateStress() > getOrCreateNetwork().calculateCapacity()
+        KineticNetwork outputNet = getOrCreateNetwork();
+        boolean outputOverStressed = outputNet.calculateStress() > outputNet.calculateCapacity()
             && IRotate.StressImpact.isEnabled();
 
         if (outputOverStressed) {
