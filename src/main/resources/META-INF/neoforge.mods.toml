@@ -44,8 +44,6 @@ side = "BOTH"
 [modproperties.modmenu]
 badges = ["client"]
 links = [
-	"modmenu.curseforge=https://www.curseforge.com/minecraft/mc-mods/redstone-throttle",
-	"modmenu.github_source=https://github.com/Z33awa/Redstone-Throttle",
-	"modmenu.issues=https://github.com/Z33awa/Redstone-Throttle/issues"
+	"modmenu.curseforge=https://www.curseforge.com/minecraft/mc-mods/redstone-throttle"
 ]
 contributors = ["Z33awa", "yasui-i"]
