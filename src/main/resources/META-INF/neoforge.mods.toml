@@ -10,6 +10,8 @@ authors = "${mod_author}"
 description = '''${mod_description}'''
 logoFile = "icon.png"
 logoBlur = false
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/redstone-throttle"
+issueTrackerURL = "https://github.com/Z33awa/Redstone-Throttle/issues"
 
 [[dependencies."${mod_id}"]]
 modId = "neoforge"
@@ -38,3 +40,10 @@ type = "optional"
 versionRange = "[0,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[modproperties.modmenu]
+badges = ["client"]
+links = [
+	"modmenu.curseforge=https://www.curseforge.com/minecraft/mc-mods/redstone-throttle"
+]
+contributors = ["Z33awa", "yasui-i"]

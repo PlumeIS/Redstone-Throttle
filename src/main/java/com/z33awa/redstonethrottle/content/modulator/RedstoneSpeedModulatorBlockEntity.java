@@ -2,10 +2,13 @@ package com.z33awa.redstonethrottle.content.modulator;
 
 import java.util.List;
 
+import com.simibubi.create.content.kinetics.KineticNetwork;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
+import com.simibubi.create.content.kinetics.base.DirectionalShaftHalvesBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import com.simibubi.create.content.kinetics.gearbox.GearboxBlockEntity;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.minecraft.ChatFormatting;
@@ -53,6 +56,10 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
     private int prevSignalDir;
     private float offset;
     private float cachedGenerated;
+    private int overstressTicks;
+    private int normalTicks;
+    private boolean inputIsOverstressed;
+    private static final int OVERSTRESS_HYSTERESIS = 10;
 
     public RedstoneSpeedModulatorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -137,12 +144,24 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
             }
         }
 
+        // Gearbox reverses direction when crossing perpendicular axes
+        rawDesired *= getGearDirectionMultiplier(facing);
+
         float desired = Math.round(rawDesired);
 
         if (Math.abs(desired - cachedGenerated) >= 0.5f) {
             cachedGenerated = desired;
             updateGeneratedRotation();
         }
+
+        // Reset stress hysteresis when output stops
+        if (Math.abs(cachedGenerated) < 0.01f) {
+            overstressTicks = 0;
+            normalTicks = 0;
+            inputIsOverstressed = false;
+        }
+
+        propagateStressToInput();
     }
 
     /**
@@ -209,7 +228,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
             || !rotate.hasShaftTowards(level, neighborPos, neighborState, towardModulator))
             return 0f;
 
-        return kbe.getSpeed();
+        return kbe.getSpeed() * getGearDirectionMultiplier(facing);
     }
 
     @Override
@@ -225,8 +244,103 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
 
     @Override
     public float calculateAddedStressCapacity() {
-        this.lastCapacityProvided = STRESS_CAPACITY;
-        return STRESS_CAPACITY;
+        if (level == null || level.isClientSide) {
+            lastCapacityProvided = STRESS_CAPACITY;
+            return STRESS_CAPACITY;
+        }
+
+        float maxOutput = STRESS_CAPACITY;
+        Direction facing = getBlockState().getValue(RedstoneSpeedModulatorBlock.FACING);
+        BlockPos neighborPos = worldPosition.relative(facing.getOpposite());
+        BlockEntity be = level.getBlockEntity(neighborPos);
+
+        if (be instanceof KineticBlockEntity kbe && kbe.hasNetwork()) {
+            KineticNetwork inputNetwork = kbe.getOrCreateNetwork();
+            float inputAvailable = Math.max(0, inputNetwork.calculateCapacity() - inputNetwork.calculateStress());
+            float outputSpeed = Math.abs(cachedGenerated);
+            if (outputSpeed > 0.01f) {
+                maxOutput = Math.min(STRESS_CAPACITY, inputAvailable / outputSpeed);
+            }
+        } else {
+            maxOutput = 0f;
+        }
+
+        lastCapacityProvided = maxOutput;
+        return maxOutput;
+    }
+
+    /**
+     * Returns -1 if the input passes through a gearbox that reverses direction across perpendicular axes,
+     * otherwise 1. The gearbox direction logic matches RotationPropagator.getAxisModifier.
+     */
+    private float getGearDirectionMultiplier(Direction facing) {
+        BlockPos neighborPos = worldPosition.relative(facing.getOpposite());
+        BlockEntity be = level.getBlockEntity(neighborPos);
+        if (!(be instanceof GearboxBlockEntity gbe) || !gbe.hasSource())
+            return 1f;
+
+        Direction sourceDir = ((DirectionalShaftHalvesBlockEntity) gbe).getSourceFacing();
+        Direction towardModulator = facing;
+        if (towardModulator.getAxis() == sourceDir.getAxis())
+            return towardModulator != sourceDir ? -1f : 1f;
+        return towardModulator.getAxisDirection() == sourceDir.getAxisDirection() ? -1f : 1f;
+    }
+
+    private void propagateStressToInput() {
+        Direction facing = getBlockState().getValue(RedstoneSpeedModulatorBlock.FACING);
+        BlockPos neighborPos = worldPosition.relative(facing.getOpposite());
+        BlockEntity be = level.getBlockEntity(neighborPos);
+        if (!(be instanceof KineticBlockEntity kbe) || !kbe.hasNetwork()) {
+            inputIsOverstressed = false;
+            overstressTicks = 0;
+            normalTicks = 0;
+            return;
+        }
+        if (!hasNetwork()) {
+            inputIsOverstressed = false;
+            overstressTicks = 0;
+            normalTicks = 0;
+            return;
+        }
+
+        KineticNetwork outputNet = getOrCreateNetwork();
+        boolean outputOverStressed = outputNet.calculateStress() > outputNet.calculateCapacity()
+            && IRotate.StressImpact.isEnabled();
+
+        if (outputOverStressed) {
+            overstressTicks++;
+            normalTicks = 0;
+        } else {
+            normalTicks++;
+            overstressTicks = 0;
+        }
+
+        KineticNetwork inputNet = kbe.getOrCreateNetwork();
+
+        if (overstressTicks >= OVERSTRESS_HYSTERESIS && !inputIsOverstressed) {
+            inputIsOverstressed = true;
+            overstressTicks = OVERSTRESS_HYSTERESIS;
+            // Force input network overstress via zero capacity on all members
+            for (KineticBlockEntity member : inputNet.members.keySet()) {
+                member.updateFromNetwork(0, 1, inputNet.getSize());
+            }
+        } else if (normalTicks >= OVERSTRESS_HYSTERESIS && inputIsOverstressed) {
+            inputIsOverstressed = false;
+            normalTicks = OVERSTRESS_HYSTERESIS;
+            // updateNetwork() skips sync when currentStress==newStress (no member map changed).
+            // Call updateFromNetwork on each member directly with the real capacity/stress.
+            float cap = inputNet.calculateCapacity();
+            float str = inputNet.calculateStress();
+            int sz = inputNet.getSize();
+            for (KineticBlockEntity member : inputNet.members.keySet()) {
+                member.updateFromNetwork(cap, str, sz);
+            }
+        }
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
     }
 
     @Override

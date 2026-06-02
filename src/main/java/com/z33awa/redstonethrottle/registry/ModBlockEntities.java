@@ -15,7 +15,7 @@ public class ModBlockEntities {
         DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, RedstoneThrottleMod.MOD_ID);
 
     public static final Supplier<BlockEntityType<RedstoneSpeedModulatorBlockEntity>> REDSTONE_SPEED_MODULATOR =
-        BLOCK_ENTITIES.register("redstone_speed_modulator",
+        BLOCK_ENTITIES.register("transmission",
             () -> BlockEntityType.Builder.of(
                 (pos, state) -> new RedstoneSpeedModulatorBlockEntity(
                     ModBlockEntities.REDSTONE_SPEED_MODULATOR.get(), pos, state),

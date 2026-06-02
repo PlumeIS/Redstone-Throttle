@@ -14,7 +14,7 @@ public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(RedstoneThrottleMod.MOD_ID);
 
     public static final DeferredBlock<RedstoneSpeedModulatorBlock> REDSTONE_SPEED_MODULATOR =
-        BLOCKS.register("redstone_speed_modulator",
+        BLOCKS.register("transmission",
             () -> new RedstoneSpeedModulatorBlock(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(2.0f, 6.0f)
