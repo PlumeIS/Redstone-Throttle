@@ -86,7 +86,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
         int leftSig = level.getSignal(worldPosition.relative(leftDir), leftDir);
         int rightSig = level.getSignal(worldPosition.relative(rightDir), rightDir);
 
-        int signalDir = Integer.signum(leftSig - rightSig);
+        int signalDir = Integer.signum(rightSig - leftSig);
         boolean signalActive = signalDir != 0;
         boolean justActivated = signalActive && !wasSignalActive;
         boolean directionChanged = signalActive && wasSignalActive && signalDir != prevSignalDir;
@@ -105,7 +105,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
                 rawDesired = 0f;
             } else {
                 int dir = initialSpeed >= 0 ? 1 : -1;
-                float delta = (leftSig - rightSig) * (float) strengthMultiplier;
+                float delta = (rightSig - leftSig) * (float) strengthMultiplier;
                 float targetAbs = Math.abs(initialSpeed) + delta;
                 targetAbs = Mth.clamp(targetAbs, 0f, maxSpeed);
                 rawDesired = dir * targetAbs;
@@ -122,11 +122,11 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
 
                 float delta;
                 if (mode == Mode.STRENGTH) {
-                    delta = (leftSig - rightSig) * STRENGTH_RATE;
+                    delta = (rightSig - leftSig) * STRENGTH_RATE;
                 } else {
                     int leftActive = leftSig > 0 ? 1 : 0;
                     int rightActive = rightSig > 0 ? 1 : 0;
-                    delta = (leftActive - rightActive) * (float) lockedRate;
+                    delta = (rightActive - leftActive) * (float) lockedRate;
                 }
 
                 if (inputSign != 0 && delta != 0f) {
@@ -147,9 +147,6 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
                 rawDesired = inputSign * targetAbs;
             }
         }
-
-        // Gearbox reverses direction when crossing perpendicular axes
-        rawDesired *= getGearDirectionMultiplier(facing);
 
         float desired = Math.round(rawDesired);
 
@@ -173,14 +170,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
      * The left input is the model's west face (side_redstone_west texture) after blockstate rotation.
      */
     public static Direction redstoneLeft(Direction facing) {
-        return switch (facing) {
-            case NORTH -> Direction.EAST;
-            case SOUTH -> Direction.EAST;
-            case EAST -> Direction.NORTH;
-            case WEST -> Direction.NORTH;
-            case UP -> Direction.WEST;
-            case DOWN -> Direction.EAST;
-        };
+        return facing.getAxis() == Axis.Y ? Direction.WEST : facing.getCounterClockWise();
     }
 
     /**
@@ -188,14 +178,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
      * The right input is the model's east face (side_redstone_east texture) after blockstate rotation.
      */
     public static Direction redstoneRight(Direction facing) {
-        return switch (facing) {
-            case NORTH -> Direction.WEST;
-            case SOUTH -> Direction.WEST;
-            case EAST -> Direction.SOUTH;
-            case WEST -> Direction.SOUTH;
-            case UP -> Direction.EAST;
-            case DOWN -> Direction.WEST;
-        };
+        return facing.getAxis() == Axis.Y ? Direction.EAST : facing.getClockWise();
     }
 
     private float readInputSpeed(Direction facing) {
@@ -235,6 +218,26 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
         return kbe.getSpeed() * getGearDirectionMultiplier(facing);
     }
 
+    /**
+     * Returns -1 if the input passes through a gearbox that reverses direction across perpendicular axes,
+     * otherwise 1. The gearbox direction logic matches RotationPropagator.getAxisModifier.
+     */
+    private float getGearDirectionMultiplier(Direction facing) {
+        BlockPos neighborPos = worldPosition.relative(facing.getOpposite());
+        BlockEntity be = level.getBlockEntity(neighborPos);
+        if (!(be instanceof GearboxBlockEntity gbe))
+            return 1f;
+
+        Direction sourceDir = ((DirectionalShaftHalvesBlockEntity) gbe).getSourceFacing();
+        if (sourceDir == null)
+            return 1f;
+
+        Direction towardModulator = facing;
+        if (towardModulator.getAxis() == sourceDir.getAxis())
+            return towardModulator != sourceDir ? -1f : 1f;
+        return towardModulator.getAxisDirection() == sourceDir.getAxisDirection() ? -1f : 1f;
+    }
+
     @Override
     public float getGeneratedSpeed() {
         return cachedGenerated;
@@ -271,23 +274,6 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
 
         lastCapacityProvided = maxOutput;
         return maxOutput;
-    }
-
-    /**
-     * Returns -1 if the input passes through a gearbox that reverses direction across perpendicular axes,
-     * otherwise 1. The gearbox direction logic matches RotationPropagator.getAxisModifier.
-     */
-    private float getGearDirectionMultiplier(Direction facing) {
-        BlockPos neighborPos = worldPosition.relative(facing.getOpposite());
-        BlockEntity be = level.getBlockEntity(neighborPos);
-        if (!(be instanceof GearboxBlockEntity gbe) || !gbe.hasSource())
-            return 1f;
-
-        Direction sourceDir = ((DirectionalShaftHalvesBlockEntity) gbe).getSourceFacing();
-        Direction towardModulator = facing;
-        if (towardModulator.getAxis() == sourceDir.getAxis())
-            return towardModulator != sourceDir ? -1f : 1f;
-        return towardModulator.getAxisDirection() == sourceDir.getAxisDirection() ? -1f : 1f;
     }
 
     private void propagateStressToInput() {
