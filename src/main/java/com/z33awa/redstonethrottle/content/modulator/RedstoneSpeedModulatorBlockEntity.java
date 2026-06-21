@@ -96,23 +96,25 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
         float maxSpeed = AllConfigs.server().kinetics.maxRotationSpeed.get().floatValue();
         float inputSpeed = readInputSpeed(facing);
 
+        int inputSign = Math.abs(inputSpeed) < 0.01f ? 0 : (inputSpeed > 0 ? 1 : -1);
+        float inputAbs = Math.abs(inputSpeed);
+
         float rawDesired;
         if (mode == Mode.MULTIPLIER) {
-            // Instantaneous: output = initialSpeed + S_left × N - S_right × N
-            if (Math.abs(inputSpeed) < 0.01f) {
+            if (inputSign == 0) {
                 rawDesired = 0f;
             } else {
-                rawDesired = Mth.clamp(initialSpeed + (leftSig - rightSig) * (float) strengthMultiplier, -maxSpeed, maxSpeed);
-                if (initialSpeed >= 0f && rawDesired < 0f) rawDesired = 0f;
-                if (initialSpeed < 0f && rawDesired > 0f) rawDesired = 0f;
+                int dir = initialSpeed >= 0 ? 1 : -1;
+                float delta = (leftSig - rightSig) * (float) strengthMultiplier;
+                float targetAbs = Math.abs(initialSpeed) + delta;
+                targetAbs = Mth.clamp(targetAbs, 0f, maxSpeed);
+                rawDesired = dir * targetAbs;
             }
         } else {
             // STRENGTH / FIXED: accumulate offset over time
             int interval = Math.max(MIN_INTERVAL_TICKS, intervalTicks);
-            float offsetMin = -maxSpeed;
-            float offsetMax = maxSpeed;
-            if (inputSpeed > 0f) offsetMin = -inputSpeed;
-            if (inputSpeed < 0f) offsetMax = -inputSpeed;
+            float offsetMin = -inputAbs;
+            float offsetMax = maxSpeed - inputAbs;
 
             tickCounter++;
             if (justActivated || directionChanged || tickCounter >= interval) {
@@ -127,20 +129,22 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
                     delta = (leftActive - rightActive) * (float) lockedRate;
                 }
 
-                if (delta != 0f) {
+                if (inputSign != 0 && delta != 0f) {
                     offset = Mth.clamp(offset + delta, offsetMin, offsetMax);
                     setChanged();
                 }
             }
 
-            offset = Mth.clamp(offset, offsetMin, offsetMax);
+            if (inputSign != 0) {
+                offset = Mth.clamp(offset, offsetMin, offsetMax);
+            }
 
-            if (Math.abs(inputSpeed) < 0.01f) {
+            if (inputSign == 0) {
                 rawDesired = 0f;
             } else {
-                rawDesired = Mth.clamp(inputSpeed + offset, -maxSpeed, maxSpeed);
-                if (inputSpeed > 0f && rawDesired < 0f) rawDesired = 0f;
-                if (inputSpeed < 0f && rawDesired > 0f) rawDesired = 0f;
+                float targetAbs = inputAbs + offset;
+                targetAbs = Mth.clamp(targetAbs, 0f, maxSpeed);
+                rawDesired = inputSign * targetAbs;
             }
         }
 
@@ -154,7 +158,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
             updateGeneratedRotation();
         }
 
-        // Reset stress hysteresis when output stops
+        // Reset stress hysteresis when output stops or switches direction
         if (Math.abs(cachedGenerated) < 0.01f) {
             overstressTicks = 0;
             normalTicks = 0;
@@ -170,12 +174,12 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
      */
     public static Direction redstoneLeft(Direction facing) {
         return switch (facing) {
-            case NORTH -> Direction.WEST;
-            case SOUTH -> Direction.WEST;
-            case EAST -> Direction.SOUTH;
-            case WEST -> Direction.SOUTH;
-            case UP -> Direction.EAST;
-            case DOWN -> Direction.WEST;
+            case NORTH -> Direction.EAST;
+            case SOUTH -> Direction.EAST;
+            case EAST -> Direction.NORTH;
+            case WEST -> Direction.NORTH;
+            case UP -> Direction.WEST;
+            case DOWN -> Direction.EAST;
         };
     }
 
@@ -185,12 +189,12 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
      */
     public static Direction redstoneRight(Direction facing) {
         return switch (facing) {
-            case NORTH -> Direction.EAST;
-            case SOUTH -> Direction.EAST;
-            case EAST -> Direction.NORTH;
-            case WEST -> Direction.NORTH;
-            case UP -> Direction.WEST;
-            case DOWN -> Direction.EAST;
+            case NORTH -> Direction.WEST;
+            case SOUTH -> Direction.WEST;
+            case EAST -> Direction.SOUTH;
+            case WEST -> Direction.SOUTH;
+            case UP -> Direction.EAST;
+            case DOWN -> Direction.WEST;
         };
     }
 
@@ -303,8 +307,7 @@ public class RedstoneSpeedModulatorBlockEntity extends GeneratingKineticBlockEnt
             return;
         }
 
-        KineticNetwork outputNet = getOrCreateNetwork();
-        boolean outputOverStressed = outputNet.calculateStress() > outputNet.calculateCapacity()
+        boolean outputOverStressed = getOrCreateNetwork().calculateStress() > getOrCreateNetwork().calculateCapacity()
             && IRotate.StressImpact.isEnabled();
 
         if (outputOverStressed) {
