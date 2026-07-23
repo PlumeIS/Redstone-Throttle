@@ -35,7 +35,7 @@ public class RedstoneSpeedModulatorRenderer extends KineticBlockEntityRenderer<R
         Direction frontDir = facing;
         BlockState frontState = state.setValue(RedstoneSpeedModulatorBlock.FACING, frontDir);
         float frontOffset = KineticBlockEntityRenderer.getRotationOffsetForPosition(be, pos, frontDir.getAxis());
-        float outputSpeed = be.getSpeed();
+        float outputSpeed = be.getOutputSpeed();
         renderShaftHalf(be, frontState, ms, buffer, light, frontDir, outputSpeed, time, frontOffset);
 
         // Back half — input side, spinning at the upstream network's speed.
@@ -46,7 +46,7 @@ public class RedstoneSpeedModulatorRenderer extends KineticBlockEntityRenderer<R
         BlockState backState = state.setValue(RedstoneSpeedModulatorBlock.FACING, backDir);
         BlockPos neighbourPos = pos.relative(backDir);
         float backOffset = KineticBlockEntityRenderer.getRotationOffsetForPosition(be, neighbourPos, backDir.getAxis());
-        float inputSpeed = be.readInputSpeed();
+        float inputSpeed = be.getInputSpeed();
         renderShaftHalf(be, backState, ms, buffer, light, backDir, inputSpeed, time, backOffset);
     }
 

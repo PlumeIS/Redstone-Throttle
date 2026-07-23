@@ -1,0 +1,9 @@
+{
+  "parent": "redstone_throttle:block/transmission",
+  "textures": {
+    "side_east": "redstone_throttle:block/redstone_speed_modulator_2",
+    "side_west": "redstone_throttle:block/redstone_speed_modulator_2",
+    "side_up": "redstone_throttle:block/redstone_speed_modulator_4",
+    "side_down": "redstone_throttle:block/redstone_speed_modulator_3"
+  }
+}

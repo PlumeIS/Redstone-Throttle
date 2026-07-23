@@ -2,11 +2,12 @@
   "credit": "Geometry based on Create's encased_chain_drive/single with split slots and added shaft stubs.",
   "parent": "block/block",
   "textures": {
-    "1": "redstone_throttle:block/redstone_speed_modulator_1",
+    "end": "redstone_throttle:block/redstone_speed_modulator_1",
     "particle": "redstone_throttle:block/redstone_speed_modulator_2",
-    "side_redstone_east": "redstone_throttle:block/redstone_speed_modulator_3",
-    "side_redstone_west": "redstone_throttle:block/redstone_speed_modulator_4",
-    "side_chain": "redstone_throttle:block/redstone_speed_modulator_2",
+    "side_east": "redstone_throttle:block/redstone_speed_modulator_3",
+    "side_west": "redstone_throttle:block/redstone_speed_modulator_4",
+    "side_up": "redstone_throttle:block/redstone_speed_modulator_2",
+    "side_down": "redstone_throttle:block/redstone_speed_modulator_2",
     "axis": "create:block/axis",
     "axis_top": "create:block/axis_top"
   },
@@ -17,12 +18,12 @@
       "from": [0, 0, 0],
       "to": [16, 2, 16],
       "faces": {
-        "north": {"uv": [0, 14, 16, 16], "texture": "#1"},
-        "east":  {"uv": [14, 0, 16, 16], "rotation": 90,  "texture": "#side_redstone_east"},
-        "south": {"uv": [0, 14, 16, 16], "texture": "#1"},
-        "west":  {"uv": [0, 0, 2, 16],   "rotation": 270, "texture": "#side_redstone_west"},
-        "up":    {"uv": [0, 0, 16, 16],                  "texture": "#side_chain"},
-        "down":  {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#side_chain"}
+        "north": {"uv": [0, 14, 16, 16], "texture": "#end"},
+        "east":  {"uv": [14, 0, 16, 16], "rotation": 90,  "texture": "#side_east"},
+        "south": {"uv": [0, 14, 16, 16], "texture": "#end"},
+        "west":  {"uv": [0, 0, 2, 16],   "rotation": 270, "texture": "#side_west"},
+        "up":    {"uv": [0, 0, 16, 16],                  "texture": "#side_up"},
+        "down":  {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#side_down"}
       }
     },
     {
@@ -30,8 +31,8 @@
       "from": [2, 2, 0.95],
       "to": [14, 14, 15.05],
       "faces": {
-        "north": {"uv": [2, 2, 14, 14], "texture": "#1"},
-        "south": {"uv": [2, 2, 14, 14], "texture": "#1"}
+        "north": {"uv": [2, 2, 14, 14], "texture": "#end"},
+        "south": {"uv": [2, 2, 14, 14], "texture": "#end"}
       }
     },
     {
@@ -39,12 +40,12 @@
       "from": [0, 14, 0],
       "to": [16, 16, 16],
       "faces": {
-        "north": {"uv": [0, 0, 16, 2], "texture": "#1"},
-        "east":  {"uv": [0, 0, 2, 16],  "rotation": 90,  "texture": "#side_redstone_east"},
-        "south": {"uv": [0, 0, 16, 2], "texture": "#1"},
-        "west":  {"uv": [14, 0, 16, 16], "rotation": 270, "texture": "#side_redstone_west"},
-        "up":    {"uv": [0, 0, 16, 16], "texture": "#side_chain"},
-        "down":  {"uv": [0, 0, 16, 16], "texture": "#side_chain"}
+        "north": {"uv": [0, 0, 16, 2], "texture": "#end"},
+        "east":  {"uv": [0, 0, 2, 16],  "rotation": 90,  "texture": "#side_east"},
+        "south": {"uv": [0, 0, 16, 2], "texture": "#end"},
+        "west":  {"uv": [14, 0, 16, 16], "rotation": 270, "texture": "#side_west"},
+        "up":    {"uv": [0, 0, 16, 16], "texture": "#side_up"},
+        "down":  {"uv": [0, 0, 16, 16], "texture": "#side_down"}
       }
     },
     {
@@ -52,10 +53,10 @@
       "from": [0, 2, 0],
       "to": [2, 14, 16],
       "faces": {
-        "north": {"uv": [14, 2, 16, 14], "texture": "#1"},
-        "east":  {"uv": [2, 0, 14, 16], "rotation": 270, "texture": "#side_redstone_east"},
-        "south": {"uv": [0, 2, 2, 14],  "texture": "#1"},
-        "west":  {"uv": [2, 0, 14, 16], "rotation": 270, "texture": "#side_redstone_west"}
+        "north": {"uv": [14, 2, 16, 14], "texture": "#end"},
+        "east":  {"uv": [2, 0, 14, 16], "rotation": 270, "texture": "#side_east"},
+        "south": {"uv": [0, 2, 2, 14],  "texture": "#end"},
+        "west":  {"uv": [2, 0, 14, 16], "rotation": 270, "texture": "#side_west"}
       }
     },
     {
@@ -63,10 +64,10 @@
       "from": [14, 2, 0],
       "to": [16, 14, 16],
       "faces": {
-        "north": {"uv": [0, 2, 2, 14],   "texture": "#1"},
-        "east":  {"uv": [2, 0, 14, 16], "rotation": 90,  "texture": "#side_redstone_east"},
-        "south": {"uv": [14, 2, 16, 14], "texture": "#1"},
-        "west":  {"uv": [2, 0, 14, 16], "rotation": 270, "texture": "#side_redstone_west"}
+        "north": {"uv": [0, 2, 2, 14],   "texture": "#end"},
+        "east":  {"uv": [2, 0, 14, 16], "rotation": 90,  "texture": "#side_east"},
+        "south": {"uv": [14, 2, 16, 14], "texture": "#end"},
+        "west":  {"uv": [2, 0, 14, 16], "rotation": 270, "texture": "#side_west"}
       }
     }
   ]
