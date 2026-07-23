@@ -1,12 +1,13 @@
 package com.z33awa.redstonethrottle.client;
 
-import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlock;
 import com.z33awa.redstonethrottle.content.modulator.RedstoneSpeedModulatorBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;
+import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -14,6 +15,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class RedstoneSpeedModulatorRenderer extends KineticBlockEntityRenderer<RedstoneSpeedModulatorBlockEntity> {
@@ -26,36 +29,26 @@ public class RedstoneSpeedModulatorRenderer extends KineticBlockEntityRenderer<R
     protected void renderSafe(RedstoneSpeedModulatorBlockEntity be, float partialTicks, PoseStack ms,
                               MultiBufferSource buffer, int light, int overlay) {
         BlockState state = be.getBlockState();
-        Direction facing = state.getValue(RedstoneSpeedModulatorBlock.FACING);
+        Block block = state.getBlock();
+        Axis shaftAxis = ((IRotate) block).getRotationAxis(state);
         BlockPos pos = be.getBlockPos();
         float time = AnimationTickHolder.getRenderTime(be.getLevel());
+        float baseSpeed = be.getSpeed();
+        float positionOffset = getRotationOffsetForPosition(be, pos, shaftAxis);
 
-        // Front half — output side, spinning at our generated speed.
-        // Use the modulator's own position offset for proper connection to downstream shaft.
-        Direction frontDir = facing;
-        BlockState frontState = state.setValue(RedstoneSpeedModulatorBlock.FACING, frontDir);
-        float frontOffset = KineticBlockEntityRenderer.getRotationOffsetForPosition(be, pos, frontDir.getAxis());
-        float outputSpeed = be.getOutputSpeed();
-        renderShaftHalf(be, frontState, ms, buffer, light, frontDir, outputSpeed, time, frontOffset);
+        // Calculate each half from its actual RPM. Create's stock SplitShaftRenderer applies
+        // the modifier after reducing the input angle modulo 360, which is only phase-safe for
+        // integral ratios such as 0 and +/-1. This block supports arbitrary output ratios, so
+        // applying the modifier to speed first keeps each half aligned with its neighbouring
+        // shaft. getSpeed() also becomes zero while overstressed.
+        for (Direction direction : Iterate.directionsInAxis(shaftAxis)) {
+            float renderedSpeed = baseSpeed * be.getRotationSpeedModifier(direction);
+            float angle = ((time * renderedSpeed * 3f / 10f + positionOffset) % 360f)
+                / 180f * (float) Math.PI;
 
-        // Back half — input side, spinning at the upstream network's speed.
-        // The back shaft connects to the block behind us. For the rotation offset to properly
-        // synchronise with the neighbour's shaft at the block boundary, we pass the neighbour's
-        // position so that the offset step between us and the neighbour is correct.
-        Direction backDir = facing.getOpposite();
-        BlockState backState = state.setValue(RedstoneSpeedModulatorBlock.FACING, backDir);
-        BlockPos neighbourPos = pos.relative(backDir);
-        float backOffset = KineticBlockEntityRenderer.getRotationOffsetForPosition(be, neighbourPos, backDir.getAxis());
-        float inputSpeed = be.getInputSpeed();
-        renderShaftHalf(be, backState, ms, buffer, light, backDir, inputSpeed, time, backOffset);
-    }
-
-    private static void renderShaftHalf(RedstoneSpeedModulatorBlockEntity be, BlockState state, PoseStack ms,
-                                        MultiBufferSource buffer, int light, Direction direction,
-                                        float speed, float time, float positionOffset) {
-        SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, state, direction);
-        float angle = ((time * speed * 3f / 10f + positionOffset) % 360f) / 180f * (float) Math.PI;
-        KineticBlockEntityRenderer.kineticRotationTransform(shaft, be, direction.getAxis(), angle, light);
-        shaft.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+            SuperByteBuffer shaft = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, state, direction);
+            kineticRotationTransform(shaft, be, shaftAxis, angle, light);
+            shaft.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        }
     }
 }
