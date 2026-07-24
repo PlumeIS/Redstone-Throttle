@@ -41,13 +41,8 @@ public class RedstoneSpeedModulatorBlock extends DirectionalKineticBlock
 
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        Direction outputFace = state.getValue(FACING);
-        if (face == outputFace.getOpposite())
-            return true;
-        if (face != outputFace)
-            return false;
-        return world.getBlockEntity(pos) instanceof RedstoneSpeedModulatorBlockEntity modulator
-            && modulator.canOutput();
+        Direction facing = state.getValue(FACING);
+        return face == facing.getOpposite() || face == facing;
     }
 
     @Override
