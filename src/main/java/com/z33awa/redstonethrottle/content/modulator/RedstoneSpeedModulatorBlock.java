@@ -41,8 +41,10 @@ public class RedstoneSpeedModulatorBlock extends DirectionalKineticBlock
 
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        Direction facing = state.getValue(FACING);
-        return face == facing.getOpposite() || face == facing;
+        // Shaft topology must not depend on the current output speed. Create traverses these
+        // connections after a source is removed to clear every downstream block; hiding the
+        // output shaft at zero speed would leave the old output network rotating indefinitely.
+        return face.getAxis() == getRotationAxis(state);
     }
 
     @Override
